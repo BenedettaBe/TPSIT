@@ -13,104 +13,76 @@ testo
 #define NUM_RIGHE 200
 #define LUNG 20
 
-typedef struct 
+typedef struct
 {
-    int anno;
-    int mese;
-    int giorno;
-}Data;
+    char* cognome;
+    char* nome;
+    int nascita;
+} Persona;
 
-typedef struct 
-{
-    char cognome[LUNG];
-    char nome[LUNG];
-    Data nascita;
-}Persona;
-
-void leggiFile(Persona *classe, char nome[], int n){
-    FILE *fp;
+int leggiFile(Persona p[], char nomeFile[], int n, int dimRiga){
+    FILE* fp;
+    Persona* pt = p;
+    fp = fopen(nomeFile, "r");
     char* campo;
-    char riga[DIM_RIGA];
-    fp = fopen(nome, "r");
-    if(fp == NULL) {
-        printf("il file non esiste");
-        exit(1);
+    char* riga;
+    int nRighe = 0;
+    if(fp == NULL){
+        printf("file non esiste");
     }
-    while(fgets(riga, DIM_RIGA, fp)) {
-        campo = strtok(NULL,",");
-        strcpy(classe->cognome, campo);
-        campo = strtok(NULL,",");
-        strcpy(classe->cognome, campo);
-        campo = strtok(NULL,",");
-        classe->nascita.anno = atoi(campo);
-        campo = strtok(NULL,",");
-        classe->nascita.mese = atoi(campo);
-        campo = strtok(NULL,",");
-        classe->nascita.giorno = atoi(campo);
+    else{
+        while(fgets(riga, dimRiga, fp)){
+            campo = strtok(riga, ",");
+            pt->cognome = strdup(campo);
+            campo = strtok(NULL, ",");
+            pt->nome = strdup(campo);
+            campo = strtok(NULL, ",");
+            pt->nascita = atoi(campo);
+            pt++;
+            nRighe++;
+        }
     }
-    fclose(fp);
+    return nRighe;
 }
 
-int contaRighe(char nome[]){
-    FILE *fp;
-    int counter = 0;
-    char* campo;
-    char riga[DIM_RIGA];
-    fp = fopen(nome, "r");
-    if(fp == NULL) {
-        printf("il file non esiste");
-        exit(1);
-    }
-    while(fgets(riga, DIM_RIGA, fp)) {
-        counter ++;
-    }
-    fclose(fp);
-    return counter;
-}
-
-void scambio(int *a, int *b)
+void scambio(Persona *a, Persona *b)
 {
-    int c;
+    Persona c;
     c = *a;
     *a = *b;
     *b = c;
 }
 
-void bubbleSort3(int vett[], int n)
-{
-    int *k, sup, sca;
-    sup = n - 1;
-    int j;
-    while (sup > 0)
-    {
-        j=0;
-        sca = 0;
-        for (k = vett; k < vett+sup; k++)
-        {
-            if (*k > *(k + 1))
-            {
-                scambio(k, (k + 1));
-                sca = j;
+void bubbleSort(Persona vett[], int n) {
+    int sup,sca,z;
+    sup= n-1 ;
+    while ( sup>0 ) {
+        sca=0 ;
+        for (Persona *p = vett; p < vett+n - 1; p++) {
+            if (p->nascita < (p + 1)->nascita) {
+                swapPersona(p, p + 1);
+                sca = p->nascita;
             }
-            j++;
         }
-        sup = sca;
+        sup=sca ;
     }
 }
 
-
-int main () {
-    char nome[] = "classe.csv";
-    int numRighe = contaRighe(nome);
-    Persona *p;
-    p = (Persona*) malloc (numRighe * sizeof(Persona));
-    Persona *classe=p;
-
-    leggiFile(classe, nome, numRighe);
-    bubbleSort3(classe, numRighe);
-    for(Persona *k = classe; k < classe+numRighe; k ++) {
-           printf("%s %s %d %d %d\n", k->cognome, k->nome, k->nascita.anno, k->nascita.mese, k->nascita.giorno);
+void stampaTabPers(Persona vett[], int n){
+    for(Persona *p = vett; p < vett+n; p++){
+        printf("%s, %s, %d\n", p->cognome, p->nome, p->nascita);
     }
+    printf("\n");
+}
+
+int main(){
+    Persona* pers;
+    pers = (Persona*)malloc(NUM_RIGHE * sizeof(Persona));
+    int nRighe = leggiFile(pers, "file.csv", NUM_RIGHE, DIM_RIGA);
+    stampaTabPers(pers, nRighe);
+    bubbleSort(pers, nRighe);
+    stampaTabPers(pers, nRighe);
+    free(pers);
 
     return 0;
 }
