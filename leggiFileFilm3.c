@@ -32,15 +32,15 @@ int leggiFile(Film lista[], char nome[]){
     }
     while(fgets(riga, DIM_RIGA, fp)) {
         campo = strtok(riga,",");
-        lista[counter].num = atoi(campo);//atoi stringa in intero
+        (lista + counter)->num = atoi(campo);//atoi stringa in intero
         campo = strtok(NULL,",");
-        lista[counter].titolo = strdup(campo);
+        (lista + counter)->titolo = strdup(campo);
         campo = strtok(NULL,",");
-        lista[counter].genere = strdup(campo);
+        (lista + counter)->genere = strdup(campo);
         campo = strtok(NULL,",");
-        lista[counter].anno = atoi(campo);
+        (lista + counter)->anno = atoi(campo);
         campo = strtok(NULL,",");
-        lista[counter].disp = strdup(campo);
+        (lista + counter)->disp = strdup(campo);
         counter ++;
     }
     fclose(fp);
@@ -55,9 +55,9 @@ int main () {
 
     printf("inserisci l'anno: ");
     scanf("%d", &anno);
-    for(int k = 0; k < counter; k ++) {
-        if(lista[k].anno == anno){
-            printf("%d %s %s %d %s\n", lista[k].num, lista[k].titolo, lista[k].genere, lista[k].anno, lista[k].disp);
+     for(int k = 0; k < counter; k ++) {
+        if((lista + k)->anno == anno){
+            printf("%d %s %s %d %s\n", (lista + k)->num, (lista + k)->titolo, (lista + k)->genere, (lista + k)->anno, (lista + k)->disp);
         }
     }
 
